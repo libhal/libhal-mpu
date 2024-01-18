@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Khalil Estell
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ struct hardware_map
   hal::steady_clock* clock;
   hal::callback<void()> reset;
 };
-}
+}  // namespace hal::mpu
 
 // Application function must be implemented by one of the compilation units
 // (.cpp) files.

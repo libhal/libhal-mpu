@@ -9,7 +9,6 @@
 [![Latest Version](https://libhal.github.io/libhal-mpu/latest_version.svg)](https://github.com/libhal/libhal-mpu/blob/main/conanfile.py)
 [![ConanCenter Version](https://repology.org/badge/version-for-repo/conancenter/libhal-mpu.svg)](https://conan.io/center/libhal-mpu)
 
-
 # [📚 Software APIs](https://libhal.github.io/libhal-mpu/api)
 
 # 📥 Install
@@ -43,7 +42,7 @@ conan remote add libhal-trunk https://libhal.jfrog.io/artifactory/api/conan/trun
 
 Now when you run
 
-```
+```bash
 conan install libhal-mpu
 ```
 
@@ -56,10 +55,3 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
 ## License
 
 Apache 2.0; see [`LICENSE`](LICENSE) for details.
-
-## Disclaimer
-
-This project is not an official Google project. It is not supported by
-Google and Google specifically disclaims all warranties as to its quality,
-merchantability, or fitness for a particular purpose.
-

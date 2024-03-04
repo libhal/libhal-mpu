@@ -41,59 +41,44 @@ public:
   };
 
   /**
-   * @brief Constructs and returns MPU object
+   * @brief Construct an mpu6050 driver
    *
-   * @param p_i2c - I2C bus the MPU is connected to
-   * @param p_device_address - address of the mpu6050
-   * @return mpu6050 object
-   * @throws std::errc::invalid_byte_sequence - when ID register does not match
-   * the expected ID for the MPU6050 device.
+   * @param p_i2c - the driver for the i2c bus the MPU6050 is connected to
+   * @param p_address - mpu6050 device address
+   * @throws hal::no_such_device - when an invalid MPU6050 device is detected.
+   * MPU6050 devices have a read-only ID register which allows a microcontroller
+   * to determine what device it is connected to. This register will be read and
+   * if it does not match the expected value, this exception is thrown.
    */
-  static result<mpu6050> create(hal::i2c& p_i2c,
-                                hal::byte p_device_address = address_ground);
+  explicit mpu6050(i2c& p_i2c, hal::byte p_address = address_ground);
 
   /**
    * @brief Changes the gravity scale that the MPU is reading. The larger the
    * scale, the less precise the reading.
    *
    * @param p_gravity_code - Scales in powers of 2 up to 16.
-   * @return hal::status - success or errors from i2c communication
    */
-  [[nodiscard]] hal::status configure_full_scale(
-    max_acceleration p_gravity_code);
+  void configure_full_scale(max_acceleration p_gravity_code);
 
   /**
-   * @brief Re-enables acceleration readings from the MPU
-   *
-   * @return hal::status - success or errors from i2c communication
-   * @throws std::errc::invalid_byte_sequence - when ID register does not match
-   * the expected ID for the MPU6050 device.
+   * @brief Power on the device
    */
-  [[nodiscard]] hal::status power_on();
+  void power_on();
 
   /**
-   * @brief Disables acceleration reading from the MPU.
-   *
-   * @return hal::status - success or errors from i2c communication
+   * @brief Power dow the device
    */
-  [[nodiscard]] hal::status power_off();
+  void power_off();
 
 private:
-  /**
-   * @brief MPU6050 Constructor
-   *
-   * @param p_i2c - i2c peripheral used to commnicate with device.
-   * @param p_address - mpu6050 device address.
-   */
-  explicit mpu6050(i2c& p_i2c, hal::byte p_device_address);
-
-  hal::result<accelerometer::read_t> driver_read() override;
+  accelerometer::read_t driver_read() override;
 
   /// The I2C peripheral used for communication with the device.
   hal::i2c* m_i2c;
-  /// Gscale is the min and maximum gs the device will read.
+  /// Gravity scale is the maximum absolute value of acceleration in units of
+  /// earth's gravity (g) that the device will read.
   hal::byte m_gscale;
-  /// The configurable device address used for communication.
+  /// The address used to communicate with the device.
   hal::byte m_address;
 };
 

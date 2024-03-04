@@ -14,30 +14,24 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-project(demos VERSION 0.0.1 LANGUAGES CXX)
+project(demos LANGUAGES CXX)
 
-find_package(libhal-lpc40 REQUIRED CONFIG)
-find_package(libhal-mpu REQUIRED CONFIG)
-find_package(libhal-util REQUIRED CONFIG)
+message(WARNING "LIBHAL_PLATFORM = ${LIBHAL_PLATFORM}")
 
-set(platform_library $ENV{LIBHAL_PLATFORM_LIBRARY})
-set(platform $ENV{LIBHAL_PLATFORM})
+libhal_build_demos(
+  DEMOS
+  mpu6050
 
-set(DEMOS mpu6050)
+  PACKAGES
+  libhal-mpu
+  prebuilt-picolibc
 
-foreach(demo IN LISTS DEMOS)
-    set(current_project ${demo}.elf)
-    message(STATUS "Generating Demo for \"${current_project}\"")
-    add_executable(${current_project}
-        main.cpp
-        platforms/${platform}.cpp
-        applications/${demo}.cpp)
-    target_compile_options(${current_project} PRIVATE -Wall -Wextra)
-    target_compile_features(${current_project} PRIVATE cxx_std_20)
-    target_link_options(${current_project} PRIVATE
-        --oslib=semihost --crt0=minimal)
-    target_link_libraries(${current_project} PRIVATE
-        libhal::${platform_library}
-        libhal::mpu)
-    libhal_post_build(${current_project})
-endforeach()
+  LINK_LIBRARIES
+  libhal::mpu
+  picolibc
+
+  LINK_FLAGS
+  -Wl,--wrap=__cxa_allocate_exception
+  -Wl,--wrap=__cxa_free_exception
+  -Wl,--wrap=__cxa_call_unexpected
+)

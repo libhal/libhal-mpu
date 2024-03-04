@@ -18,20 +18,10 @@
 
 #include "../hardware_map.hpp"
 
-namespace {
-hal::mpu::hardware_map* global_map = nullptr;
-}
-
 void application(hal::mpu::hardware_map& p_map)
 {
   using namespace std::chrono_literals;
   using namespace hal::literals;
-
-  // Set global map variable for terminate function
-  global_map = &p_map;
-
-  // Set terminate function if the application terminates.
-  std::set_terminate([]() { global_map->reset(); });
 
   auto& clock = *p_map.clock;
   auto& console = *p_map.console;

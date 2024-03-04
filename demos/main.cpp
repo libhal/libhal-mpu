@@ -14,20 +14,25 @@
 
 #include "hardware_map.hpp"
 
+hal::mpu::hardware_map hardware_map{};
+
 int main()
 {
   try {
-    auto hardware_map = initialize_platform();
-    application(hardware_map);
+    hardware_map = initialize_platform();
   } catch (...) {
     hal::halt();
   }
 
+  application(hardware_map);
+
   return 0;
 }
 
-namespace __cxxabiv1 {                                 // NOLINT
-std::terminate_handler __terminate_handler = nullptr;  // NOLINT
+namespace __cxxabiv1 {                               // NOLINT
+std::terminate_handler __terminate_handler = []() {  // NOLINT
+  hardware_map.reset();
+};
 }
 
 extern "C"

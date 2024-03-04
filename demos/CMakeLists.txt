@@ -23,11 +23,11 @@ libhal_build_demos(
   mpu6050
 
   PACKAGES
-  libhal-lpc40
+  libhal-mpu
   prebuilt-picolibc
 
   LINK_LIBRARIES
-  libhal::lpc40
+  libhal::mpu
   picolibc
 
   LINK_FLAGS

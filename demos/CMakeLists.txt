@@ -16,8 +16,6 @@ cmake_minimum_required(VERSION 3.20)
 
 project(demos LANGUAGES CXX)
 
-message(WARNING "LIBHAL_PLATFORM = ${LIBHAL_PLATFORM}")
-
 libhal_build_demos(
   DEMOS
   mpu6050

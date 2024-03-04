@@ -19,12 +19,11 @@ from conan.tools.build import check_min_cppstd
 import os
 
 
-required_conan_version = ">=2.0.6"
+required_conan_version = ">=2.0.14"
 
 
 class libhal_mpu_conan(ConanFile):
     name = "libhal-mpu"
-    version = "2.0.0"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://github.com/libhal/libhal-mpu"
@@ -47,44 +46,26 @@ class libhal_mpu_conan(ConanFile):
             "apple-clang": "14.0.0"
         }
 
-    @property
-    def _bare_metal(self):
-        return self.settings.os == "baremetal"
-
     def validate(self):
         if self.settings.get_safe("compiler.cppstd"):
             check_min_cppstd(self, self._min_cppstd)
 
     def build_requirements(self):
-        self.tool_requires("libhal-cmake-util/0.0.1")
-        self.test_requires("libhal-mock/[^2.0.1]")
+        self.tool_requires("libhal-cmake-util/3.0.1")
+        self.test_requires("libhal-mock/[^3.0.0]")
         self.test_requires("boost-ext-ut/1.1.9")
 
     def requirements(self):
-        self.requires("libhal/[^2.0.0]")
-        self.requires("libhal-util/[^3.0.0]")
+        self.requires("libhal/[^3.0.0]", transitive_headers=True)
+        self.requires("libhal-util/[^4.0.0]")
 
     def layout(self):
         cmake_layout(self)
 
     def build(self):
-        run_test = not self.conf.get("tools.build:skip_test", default=False)
-
         cmake = CMake(self)
-        if self.settings.os == "Windows":
-            cmake.configure()
-        elif self._bare_metal:
-            cmake.configure(variables={
-                "BUILD_TESTING": "OFF"
-            })
-        else:
-            cmake.configure(variables={"ENABLE_ASAN": True})
-
+        cmake.configure()
         cmake.build()
-
-        if run_test and not self._bare_metal:
-            test_folder = os.path.join("tests")
-            self.run(os.path.join(test_folder, "unit_test"))
 
     def package(self):
         copy(self,

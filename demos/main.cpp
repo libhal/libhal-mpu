@@ -16,33 +16,73 @@
 
 int main()
 {
-  auto processor_status = initialize_processor();
-
-  if (!processor_status) {
-    hal::halt();
-  }
-
-  auto platform_status = initialize_platform();
-
-  if (!platform_status) {
-    hal::halt();
-  }
-
-  auto hardware_map = platform_status.value();
-  auto is_finished = application(hardware_map);
-
-  if (!is_finished) {
-    hardware_map.reset();
-  } else {
+  try {
+    auto hardware_map = initialize_platform();
+    application(hardware_map);
+  } catch (...) {
     hal::halt();
   }
 
   return 0;
 }
 
-namespace boost {
-void throw_exception([[maybe_unused]] std::exception const& e)
-{
-  hal::halt();
+namespace __cxxabiv1 {                                 // NOLINT
+std::terminate_handler __terminate_handler = nullptr;  // NOLINT
 }
-}  // namespace boost
+
+extern "C"
+{
+  void _exit([[maybe_unused]] int rc)
+  {
+    std::terminate();
+  }
+
+  int kill(int, int)
+  {
+    return -1;
+  }
+
+  struct _reent* _impure_ptr = nullptr;  // NOLINT
+
+  int getpid()
+  {
+    return 1;
+  }
+
+  std::array<std::uint8_t, 256> exception_storage{};
+
+  void* __wrap___cxa_allocate_exception(unsigned int p_size)  // NOLINT
+  {
+    // Size of the GCC exception object header
+    constexpr size_t header_size = 128;
+
+    if (exception_storage.size() < header_size + p_size) {
+      std::terminate();
+    }
+
+    // Required for GCC's impl to work correctly as it assumes that all bytes
+    // default to 0.
+    exception_storage.fill(0);
+    return exception_storage.data() + header_size;
+  }
+
+  void __wrap___cxa_call_unexpected(void*)  // NOLINT
+  {
+    std::terminate();
+  }
+
+  void __wrap___cxa_free_exception(void*)  // NOLINT
+  {
+    // Clear the contents of the storage buffer as the exception runtime expects
+    // the contents to already be cleared.
+    exception_storage.fill(0);
+  }
+
+  void __assert_func([[maybe_unused]] const char* p_file,
+                     [[maybe_unused]] int p_line,
+                     [[maybe_unused]] const char* p_function,
+                     [[maybe_unused]] const char* p_failed_expr)
+  {
+    abort();
+  }
+}  // extern "C"

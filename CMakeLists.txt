@@ -24,18 +24,4 @@ libhal_test_and_make_library(
   TEST_SOURCES
   tests/mpu6050.test.cpp
   tests/main.test.cpp
-
-  PACKAGES
-  libhal
-  libhal-util
-
-  LINK_LIBRARIES
-  libhal::libhal
-  libhal::util
-
-  TEST_PACKAGES
-  libhal-mock
-
-  TEST_LINK_LIBRARIES
-  libhal::mock
 )

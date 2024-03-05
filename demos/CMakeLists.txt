@@ -22,14 +22,7 @@ libhal_build_demos(
 
   PACKAGES
   libhal-mpu
-  prebuilt-picolibc
 
   LINK_LIBRARIES
   libhal::mpu
-  picolibc
-
-  LINK_FLAGS
-  -Wl,--wrap=__cxa_allocate_exception
-  -Wl,--wrap=__cxa_free_exception
-  -Wl,--wrap=__cxa_call_unexpected
 )

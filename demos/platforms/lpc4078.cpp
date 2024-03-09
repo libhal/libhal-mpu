@@ -17,9 +17,31 @@
 #include <libhal-lpc40/clock.hpp>
 #include <libhal-lpc40/constants.hpp>
 #include <libhal-lpc40/i2c.hpp>
+#include <libhal-lpc40/output_pin.hpp>
 #include <libhal-lpc40/uart.hpp>
+#include <libhal-util/steady_clock.hpp>
 
 #include "../hardware_map.hpp"
+
+[[noreturn]] void terminate_handler() noexcept
+{
+  hal::cortex_m::dwt_counter steady_clock(
+    hal::lpc40::get_frequency(hal::lpc40::peripheral::cpu));
+
+  hal::lpc40::output_pin led(1, 10);
+
+  while (true) {
+    using namespace std::chrono_literals;
+    led.level(false);
+    hal::delay(steady_clock, 100ms);
+    led.level(true);
+    hal::delay(steady_clock, 100ms);
+    led.level(false);
+    hal::delay(steady_clock, 100ms);
+    led.level(true);
+    hal::delay(steady_clock, 1000ms);
+  }
+}
 
 hal::mpu::hardware_map initialize_platform()
 {

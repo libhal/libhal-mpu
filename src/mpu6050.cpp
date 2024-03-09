@@ -17,6 +17,7 @@
 #include <libhal-util/i2c.hpp>
 #include <libhal-util/map.hpp>
 #include <libhal/accelerometer.hpp>
+#include <libhal/error.hpp>
 
 #include "mpu6050_constants.hpp"
 
@@ -41,29 +42,24 @@ void active_mode(hal::i2c& p_i2c, hal::byte p_address, bool p_is_active)
              std::array{ hal::mpu::initalizing_register, control },
              hal::never_timeout());
 }
-
-/// Verify that the device is the correct device
-void detect_valid_device_or_throw(hal::i2c& p_i2c, hal::byte p_address)
-{
-  static constexpr hal::byte expected_device_id = 0x68;
-  // Read out the identity register
-  auto device_id =
-    hal::write_then_read<1>(p_i2c,
-                            p_address,
-                            std::array{ hal::mpu::who_am_i_register },
-                            hal::never_timeout())[0];
-
-  if (device_id != expected_device_id) {
-    hal::safe_throw(std::errc::illegal_byte_sequence);
-  }
-}
 }  // namespace
 
 mpu6050::mpu6050(hal::i2c& p_i2c, hal::byte p_device_address)
   : m_i2c(&p_i2c)
   , m_address(p_device_address)
 {
-  detect_valid_device_or_throw(*m_i2c, m_address);
+  static constexpr hal::byte expected_device_id = 0x68;
+  // Read out the identity register
+  auto device_id =
+    hal::write_then_read<1>(*m_i2c,
+                            m_address,
+                            std::array{ hal::mpu::who_am_i_register },
+                            hal::never_timeout())[0];
+
+  if (device_id != expected_device_id) {
+    hal::safe_throw(hal::no_such_device(m_address, this));
+  }
+
   power_on();
 }
 

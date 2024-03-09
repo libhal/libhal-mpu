@@ -16,7 +16,7 @@ from conan import ConanFile
 
 
 class demos(ConanFile):
-    python_requires = "libhal-bootstrap/[^0.0.1]"
+    python_requires = "libhal-bootstrap/[^0.0.4]"
     python_requires_extend = "libhal-bootstrap.demo"
 
     def requirements(self):

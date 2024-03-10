@@ -22,9 +22,7 @@ libhal_build_demos(
 
   PACKAGES
   libhal-mpu
-  libhal-exceptions
 
   LINK_LIBRARIES
   libhal::mpu
-  libhal::exceptions
 )

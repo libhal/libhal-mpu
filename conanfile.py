@@ -26,7 +26,7 @@ class libhal_mpu_conan(ConanFile):
     topics = ("mpu", "IMU", "accelerometer")
     settings = "compiler", "build_type", "os", "arch"
 
-    python_requires = "libhal-bootstrap/[^0.0.1]"
+    python_requires = "libhal-bootstrap/[^0.0.7]"
     python_requires_extend = "libhal-bootstrap.library"
 
     def requirements(self):

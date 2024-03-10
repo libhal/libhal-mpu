@@ -14,6 +14,7 @@
 
 #include <libhal-armcortex/dwt_counter.hpp>
 #include <libhal-armcortex/system_control.hpp>
+#include <libhal-exceptions/control.hpp>
 #include <libhal-lpc40/clock.hpp>
 #include <libhal-lpc40/constants.hpp>
 #include <libhal-lpc40/i2c.hpp>
@@ -46,9 +47,10 @@
 hal::mpu::hardware_map initialize_platform()
 {
   using namespace hal::literals;
-
   // Set the MCU to the maximum clock speed
   hal::lpc40::maximum(10.0_MHz);
+
+  hal::set_terminate(terminate_handler);
 
   static hal::cortex_m::dwt_counter counter(
     hal::lpc40::get_frequency(hal::lpc40::peripheral::cpu));
